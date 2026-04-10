@@ -34,7 +34,6 @@
             overflow-x: hidden;
         }
 
-        /* Sophisticated Grid Background */
         .bg-grid {
             position: fixed;
             inset: 0;
@@ -49,7 +48,6 @@
             animation: gridDrift 30s linear infinite;
         }
 
-        /* Ambient Orbs */
         .ambient-orb {
             position: fixed;
             top: -20vh;
@@ -77,11 +75,9 @@
             animation: floatOrb 15s ease-in-out infinite alternate;
         }
 
-        /* Typography & Structure elements */
         .font-mono-custom { font-family: "IBM Plex Mono", monospace; }
         .font-display { font-family: "Syne", sans-serif; }
 
-        /* Component styles */
         .site-header {
             transition: background var(--transition), border-color var(--transition), backdrop-filter var(--transition);
         }
@@ -99,7 +95,6 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        /* Inputs */
         .custom-input {
             transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
         }
@@ -110,7 +105,6 @@
             box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
         }
 
-        /* High-end staggered blur reveal */
         .reveal {
             opacity: 0;
             transform: translateY(24px) scale(0.98);
@@ -130,7 +124,6 @@
         .delay-200 { transition-delay: 200ms; }
         .delay-300 { transition-delay: 300ms; }
 
-        /* Animations */
         @keyframes gridDrift {
             0% { transform: translateY(0); }
             100% { transform: translateY(64px); }
@@ -155,7 +148,6 @@
             animation: heroFloat 8s ease-in-out infinite;
         }
 
-        /* Hover glows */
         .hover-glow-border {
             position: relative;
         }
@@ -173,23 +165,231 @@
             opacity: 1;
         }
 
-        /* Clean scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        /* Vinyl Record Styles */
+        .vinyl-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 100;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .vinyl-disk {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            position: relative;
+            background: 
+                radial-gradient(circle at center, #111 0%, #111 18%, transparent 18.5%),
+                radial-gradient(circle at center, transparent 18%, rgba(255,255,255,0.04) 18.5%, rgba(255,255,255,0.04) 19%, transparent 19.5%),
+                radial-gradient(circle at center, transparent 22%, rgba(255,255,255,0.03) 22.5%, rgba(255,255,255,0.03) 23%, transparent 23.5%),
+                radial-gradient(circle at center, transparent 27%, rgba(255,255,255,0.04) 27.5%, rgba(255,255,255,0.04) 28%, transparent 28.5%),
+                radial-gradient(circle at center, transparent 32%, rgba(255,255,255,0.03) 32.5%, rgba(255,255,255,0.03) 33%, transparent 33.5%),
+                radial-gradient(circle at center, transparent 37%, rgba(255,255,255,0.04) 37.5%, rgba(255,255,255,0.04) 38%, transparent 38.5%),
+                radial-gradient(circle at center, transparent 42%, rgba(255,255,255,0.03) 42.5%, rgba(255,255,255,0.03) 43%, transparent 43.5%),
+                radial-gradient(circle at center, transparent 47%, rgba(255,255,255,0.04) 47.5%, rgba(255,255,255,0.04) 48%, transparent 48.5%),
+                radial-gradient(circle at center, transparent 52%, rgba(255,255,255,0.03) 52.5%, rgba(255,255,255,0.03) 53%, transparent 53.5%),
+                radial-gradient(circle at center, transparent 57%, rgba(255,255,255,0.04) 57.5%, rgba(255,255,255,0.04) 58%, transparent 58.5%),
+                radial-gradient(circle at center, transparent 62%, rgba(255,255,255,0.03) 62.5%, rgba(255,255,255,0.03) 63%, transparent 63.5%),
+                radial-gradient(circle at center, transparent 67%, rgba(255,255,255,0.04) 67.5%, rgba(255,255,255,0.04) 68%, transparent 68.5%),
+                radial-gradient(circle at center, transparent 73%, rgba(255,255,255,0.03) 73.5%, rgba(255,255,255,0.03) 74%, transparent 74.5%),
+                radial-gradient(circle at center, transparent 80%, rgba(255,255,255,0.04) 80.5%, rgba(255,255,255,0.04) 81%, transparent 81.5%),
+                radial-gradient(circle at center, transparent 87%, rgba(255,255,255,0.03) 87.5%, rgba(255,255,255,0.03) 88%, transparent 88.5%),
+                radial-gradient(circle at center, transparent 93%, rgba(255,255,255,0.04) 93.5%, rgba(255,255,255,0.04) 94%, transparent 94.5%),
+                radial-gradient(circle, #0a0a0a 0%, #1a1a1a 100%);
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.08),
+                0 8px 32px rgba(0,0,0,0.8),
+                0 0 60px rgba(0,0,0,0.5);
+            animation: vinylSpin 3s linear infinite;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .vinyl-disk.paused {
+            animation-play-state: paused;
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.05),
+                0 4px 20px rgba(0,0,0,0.6),
+                0 0 40px rgba(0,0,0,0.4);
+        }
+
+        .vinyl-disk::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, #2a2a2a, #0d0d0d);
+            border: 1px solid rgba(255,255,255,0.06);
+            z-index: 2;
+        }
+
+        .vinyl-disk::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            z-index: 3;
+        }
+
+        .vinyl-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            z-index: 2;
+        }
+
+        .vinyl-glow {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .vinyl-container:hover .vinyl-glow {
+            opacity: 1.5;
+        }
+
+        .vinyl-container:hover .vinyl-disk {
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.12),
+                0 8px 40px rgba(0,0,0,0.9),
+                0 0 80px rgba(255,255,255,0.03);
+        }
+
+        .vinyl-pause-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .vinyl-pause-indicator .bar {
+            width: 2.5px;
+            height: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 1px;
+        }
+
+        .vinyl-disk.paused ~ .vinyl-pause-indicator {
+            opacity: 1;
+        }
+
+        @keyframes vinylSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .vinyl-tooltip {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            right: 0;
+            padding: 6px 12px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.5);
+            white-space: nowrap;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            pointer-events: none;
+        }
+
+        .vinyl-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 24px;
+            border: 4px solid transparent;
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        .vinyl-container:hover .vinyl-tooltip {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 640px) {
+            .vinyl-container {
+                bottom: 20px;
+                right: 20px;
+            }
+            .vinyl-disk {
+                width: 60px;
+                height: 60px;
+            }
+            .vinyl-disk::before {
+                width: 18px;
+                height: 18px;
+            }
+            .vinyl-label {
+                width: 14px;
+                height: 14px;
+            }
+        }
     </style>
 </head>
 <body class="text-neutral-300 antialiased selection:bg-white/20 selection:text-white">
     
-    <!-- Sophisticated Background -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="file:///C:/Users/Jorda/Downloads/worry.mp3" type="audio/mpeg">
+    </audio>
+
     <div class="bg-grid" aria-hidden="true"></div>
     <div class="ambient-orb" aria-hidden="true"></div>
     <div class="ambient-orb-2" aria-hidden="true"></div>
 
+    <div class="vinyl-container" id="vinylToggle" role="button" aria-label="Toggle music" tabindex="0">
+        <div class="vinyl-tooltip" id="vinylTooltip">Click to pause</div>
+        <div class="vinyl-glow"></div>
+        <div class="vinyl-disk" id="vinylDisk">
+            <div class="vinyl-label"></div>
+        </div>
+        <div class="vinyl-pause-indicator">
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+
     <div class="relative isolation-isolate">
         
-        <!-- Navigation -->
         <header class="site-header fixed top-0 w-full z-50 border-b border-transparent" id="top">
             <div class="max-w-[1160px] mx-auto px-6 h-20 flex items-center justify-between">
                 <a class="flex items-center gap-3 group" href="#top" aria-label="OPIUM Client home">
@@ -199,7 +399,7 @@
 
                 <nav class="hidden md:flex items-center gap-8" aria-label="Primary">
                     <a href="#features" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Features</a>
-                    <a href="#pricing" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Purchase</a>
+                    <a href="#pricing" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Access</a>
                     <a href="#activate" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Activate</a>
                     <a href="#community" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Socials</a>
                     
@@ -211,7 +411,6 @@
         </header>
 
         <main>
-            <!-- Hero Section -->
             <section class="relative pt-40 pb-20 md:pt-48 md:pb-32 px-6">
                 <div class="max-w-[1160px] mx-auto text-center">
                     
@@ -231,7 +430,7 @@
 
                         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
                             <a class="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] w-full sm:w-auto" href="#pricing">
-                                Purchase License
+                                Get Access Free
                                 <iconify-icon icon="solar:bag-3-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
                             </a>
                             <a class="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl border border-white/10 bg-white/[0.02] text-white font-medium text-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 hover:scale-[1.02] w-full sm:w-auto" href="#activate">
@@ -241,7 +440,6 @@
                         </div>
                     </div>
 
-                    <!-- Window Terminal -->
                     <article class="reveal delay-200 mt-24 animate-hero mx-auto max-w-4xl rounded-2xl glass-panel shadow-[0_30px_80px_rgba(0,0,0,0.8)] border border-white/10 overflow-hidden relative group">
                         
                         <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
@@ -290,19 +488,17 @@
                 </div>
             </section>
 
-            <!-- Features Section -->
             <section class="py-24 md:py-32 px-6" id="features">
                 <div class="max-w-[1160px] mx-auto">
                     <div class="reveal max-w-2xl mx-auto text-center mb-20">
                         <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Core Architecture</span>
-                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">A dev’s passion project.</h2>
+                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">A dev's passion project.</h2>
                         <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
                             Engineered with a strict monochrome palette. Smoother depth, perfect spacing, and seamless motion.
                         </p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <!-- Feature Cards -->
                         <article class="reveal hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
                             <iconify-icon icon="solar:target-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
                             <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Combat Suite</span>
@@ -348,157 +544,28 @@
                 </div>
             </section>
 
-            <!-- Interface/GUI Showcase -->
-            <section class="py-24 md:py-32 px-6">
-                <div class="max-w-[1160px] mx-auto">
-                    <div class="reveal max-w-2xl mx-auto text-center mb-20">
-                        <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Configure The Features</span>
-                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">Interactive Interface</h2>
-                        <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
-                            A monochrome panel system that keeps the same precise grid rhythm and high-end feel.
-                        </p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Panel 1 -->
-                        <div class="reveal glass-panel rounded-3xl p-6 relative group overflow-hidden">
-                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                                <span class="font-mono-custom text-xs uppercase tracking-widest text-white flex items-center gap-3">
-                                    <iconify-icon icon="solar:target-linear" stroke-width="1.5" class="text-base text-neutral-500"></iconify-icon> Combat
-                                </span>
-                            </div>
-                            <div class="flex flex-col gap-3 relative z-10">
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-sm text-white font-light">KillAura</span>
-                                    <div class="w-8 h-4 rounded-full bg-white p-[3px] shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-black translate-x-4"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-transparent border border-transparent cursor-pointer hover:bg-white/[0.02] transition-colors">
-                                    <span class="text-sm text-neutral-400 font-light">AutoCrystal</span>
-                                    <div class="w-8 h-4 rounded-full border border-white/10 p-[3px] bg-white/[0.02] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-neutral-600"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-transparent border border-transparent cursor-pointer hover:bg-white/[0.02] transition-colors">
-                                    <span class="text-sm text-neutral-400 font-light">Surround</span>
-                                    <div class="w-8 h-4 rounded-full border border-white/10 p-[3px] bg-white/[0.02] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-neutral-600"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Panel 2 -->
-                        <div class="reveal delay-100 glass-panel rounded-3xl p-6 relative group overflow-hidden">
-                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                                <span class="font-mono-custom text-xs uppercase tracking-widest text-white flex items-center gap-3">
-                                    <iconify-icon icon="solar:routing-2-linear" stroke-width="1.5" class="text-base text-neutral-500"></iconify-icon> Movement
-                                </span>
-                            </div>
-                            <div class="flex flex-col gap-3 relative z-10">
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-sm text-white font-light">Speed</span>
-                                    <div class="w-8 h-4 rounded-full bg-white p-[3px] shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-black translate-x-4"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-transparent border border-transparent cursor-pointer hover:bg-white/[0.02] transition-colors">
-                                    <span class="text-sm text-neutral-400 font-light">Velocity</span>
-                                    <div class="w-8 h-4 rounded-full border border-white/10 p-[3px] bg-white/[0.02] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-neutral-600"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-sm text-white font-light">LongJump</span>
-                                    <div class="w-8 h-4 rounded-full bg-white p-[3px] shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-black translate-x-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Panel 3 -->
-                        <div class="reveal delay-200 glass-panel rounded-3xl p-6 relative group overflow-hidden">
-                            <div class="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                                <span class="font-mono-custom text-xs uppercase tracking-widest text-white flex items-center gap-3">
-                                    <iconify-icon icon="solar:eye-linear" stroke-width="1.5" class="text-base text-neutral-500"></iconify-icon> Render
-                                </span>
-                            </div>
-                            <div class="flex flex-col gap-3 relative z-10">
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-transparent border border-transparent cursor-pointer hover:bg-white/[0.02] transition-colors">
-                                    <span class="text-sm text-neutral-400 font-light">ESP</span>
-                                    <div class="w-8 h-4 rounded-full border border-white/10 p-[3px] bg-white/[0.02] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-neutral-600"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-sm text-white font-light">Fullbright</span>
-                                    <div class="w-8 h-4 rounded-full bg-white p-[3px] shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-black translate-x-4"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center justify-between h-12 px-4 rounded-xl bg-white/[0.02] border border-white/5 cursor-pointer hover:bg-white/[0.04] transition-colors">
-                                    <span class="text-sm text-white font-light">Chams</span>
-                                    <div class="w-8 h-4 rounded-full bg-white p-[3px] shadow-[0_0_15px_rgba(255,255,255,0.2)] transition-all">
-                                        <div class="w-2.5 h-2.5 rounded-full bg-black translate-x-4"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Pricing Section -->
             <section class="py-24 md:py-32 px-6" id="pricing">
                 <div class="max-w-[1160px] mx-auto">
                     <div class="reveal max-w-2xl mx-auto text-center mb-20">
                         <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Get Started</span>
-                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">Choose your plan.</h2>
+                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">Free lifetime access.</h2>
                         <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
-                            A cleaner black finish with precise spacing and refined interaction states.
+                            Full access, forever. No strings attached.
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                        <!-- Card 1 -->
-                        <article class="reveal glass-panel rounded-3xl p-10 flex flex-col h-full border border-white/5 hover:border-white/10 transition-colors duration-300">
-                            <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-6">Trial</span>
-                            <h3 class="font-display text-2xl tracking-tight font-medium text-white mb-2">Short access.</h3>
-                            <div class="text-5xl font-display font-medium text-white mb-1">$5</div>
-                            <div class="font-mono-custom text-sm text-neutral-500 pb-8 border-b border-white/5 mb-8">7 days</div>
-                            
-                            <ul class="flex flex-col gap-5 mb-10 flex-grow">
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
-                                    Full access for one week
-                                </li>
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
-                                    All standard features included
-                                </li>
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
-                                    One-time payment only
-                                </li>
-                            </ul>
-                            
-                            <a class="inline-flex items-center justify-center w-full h-12 rounded-xl border border-white/10 bg-white/[0.02] text-white font-medium text-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 mt-auto" href="#activate">Purchase</a>
-                        </article>
-
-                        <!-- Card 2 (Featured) -->
-                        <article class="reveal delay-100 relative rounded-3xl p-10 flex flex-col h-full border border-white/20 bg-neutral-950/80 shadow-[0_0_50px_-15px_rgba(255,255,255,0.1)] backdrop-blur-xl scale-100 lg:scale-[1.03] z-10 overflow-hidden">
+                    <div class="reveal max-w-lg mx-auto">
+                        <article class="relative rounded-3xl p-10 md:p-12 flex flex-col border border-white/20 bg-neutral-950/80 shadow-[0_0_50px_-15px_rgba(255,255,255,0.1)] backdrop-blur-xl overflow-hidden">
                             <div class="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent pointer-events-none"></div>
                             
                             <div class="absolute top-0 right-0 p-8 opacity-20 pointer-events-none">
                                 <iconify-icon icon="solar:star-fall-linear" stroke-width="1.5" class="text-6xl text-white"></iconify-icon>
                             </div>
                             
-                            <span class="relative z-10 font-mono-custom text-xs uppercase tracking-widest text-white mb-6">Most Popular</span>
-                            <h3 class="relative z-10 font-display text-2xl tracking-tight font-medium text-white mb-2">Lifetime access.</h3>
-                            <div class="relative z-10 text-5xl font-display font-medium text-white mb-1">$10</div>
-                            <div class="relative z-10 font-mono-custom text-sm text-neutral-400 pb-8 border-b border-white/10 mb-8">One-time purchase</div>
+                            <span class="relative z-10 font-mono-custom text-xs uppercase tracking-widest text-white mb-6">Lifetime</span>
+                            <h3 class="relative z-10 font-display text-2xl tracking-tight font-medium text-white mb-2">Permanent access.</h3>
+                            <div class="relative z-10 text-5xl font-display font-medium text-white mb-1">Free</div>
+                            <div class="relative z-10 font-mono-custom text-sm text-neutral-400 pb-8 border-b border-white/10 mb-8">No payment needed — ever</div>
                             
                             <ul class="relative z-10 flex flex-col gap-5 mb-10 flex-grow">
                                 <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
@@ -517,40 +584,22 @@
                                     <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
                                     Beta features included
                                 </li>
-                            </ul>
-                            
-                            <a class="relative z-10 inline-flex items-center justify-center w-full h-12 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] mt-auto" href="#activate">Purchase License</a>
-                        </article>
-
-                        <!-- Card 3 -->
-                        <article class="reveal delay-200 glass-panel rounded-3xl p-10 flex flex-col h-full border border-white/5 hover:border-white/10 transition-colors duration-300">
-                            <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-6">Beta Access</span>
-                            <h3 class="font-display text-2xl tracking-tight font-medium text-white mb-2">Priority rollout.</h3>
-                            <div class="text-5xl font-display font-medium text-white mb-1">$20</div>
-                            <div class="font-mono-custom text-sm text-neutral-500 pb-8 border-b border-white/5 mb-8">Lifetime</div>
-                            
-                            <ul class="flex flex-col gap-5 mb-10 flex-grow">
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
-                                    Everything in Lifetime
-                                </li>
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
-                                    Earlier access to new drops
-                                </li>
-                                <li class="flex items-start gap-4 text-sm font-light text-neutral-400">
-                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0 mt-0.5"></iconify-icon>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
                                     Private beta role included
                                 </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Priority support access
+                                </li>
                             </ul>
                             
-                            <a class="inline-flex items-center justify-center w-full h-12 rounded-xl border border-white/10 bg-white/[0.02] text-white font-medium text-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 mt-auto" href="#activate">Purchase</a>
+                            <a class="relative z-10 inline-flex items-center justify-center w-full h-14 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] mt-auto" href="#activate">Get Access Free</a>
                         </article>
                     </div>
                 </div>
             </section>
 
-            <!-- Activation Section -->
             <section class="py-24 md:py-32 px-6" id="activate">
                 <div class="max-w-[1160px] mx-auto">
                     <div class="reveal max-w-2xl mx-auto text-center mb-20">
@@ -639,7 +688,6 @@
                 </div>
             </section>
 
-            <!-- Community Section -->
             <section class="py-24 md:py-32 px-6" id="community">
                 <div class="max-w-[1160px] mx-auto">
                     <article class="reveal glass-panel rounded-3xl p-12 md:p-20 text-center relative overflow-hidden border border-white/10">
@@ -676,7 +724,6 @@
             const header = document.querySelector('.site-header');
             const reveals = document.querySelectorAll('.reveal');
 
-            // Header blur on scroll
             const handleScroll = () => {
                 if (window.scrollY > 20) {
                     header.classList.add('is-scrolled');
@@ -688,7 +735,6 @@
             window.addEventListener('scroll', handleScroll, { passive: true });
             handleScroll();
 
-            // Intersection Observer for staggered reveals
             if ('IntersectionObserver' in window) {
                 const observerOptions = {
                     root: null,
@@ -709,9 +755,58 @@
                     observer.observe(reveal);
                 });
             } else {
-                // Fallback for older browsers
                 reveals.forEach(reveal => reveal.classList.add('is-visible'));
             }
+
+            // Music & Vinyl Disk
+            const audio = document.getElementById('bgMusic');
+            const vinylToggle = document.getElementById('vinylToggle');
+            const vinylDisk = document.getElementById('vinylDisk');
+            const vinylTooltip = document.getElementById('vinylTooltip');
+            let isPlaying = false;
+
+            function toggleMusic() {
+                if (isPlaying) {
+                    audio.pause();
+                    vinylDisk.classList.add('paused');
+                    vinylTooltip.textContent = 'Click to play';
+                    isPlaying = false;
+                } else {
+                    audio.play().then(() => {
+                        vinylDisk.classList.remove('paused');
+                        vinylTooltip.textContent = 'Click to pause';
+                        isPlaying = true;
+                    }).catch((err) => {
+                        console.log('Audio play was prevented:', err);
+                        vinylTooltip.textContent = 'Click to retry';
+                    });
+                }
+            }
+
+            vinylToggle.addEventListener('click', toggleMusic);
+
+            vinylToggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleMusic();
+                }
+            });
+
+            let firstInteraction = true;
+            const startOnInteraction = () => {
+                if (firstInteraction) {
+                    firstInteraction = false;
+                    audio.play().then(() => {
+                        vinylDisk.classList.remove('paused');
+                        vinylTooltip.textContent = 'Click to pause';
+                        isPlaying = true;
+                    }).catch(() => {});
+                }
+                document.removeEventListener('click', startOnInteraction);
+                document.removeEventListener('keydown', startOnInteraction);
+            };
+            document.addEventListener('click', startOnInteraction);
+            document.addEventListener('keydown', startOnInteraction);
         });
     </script>
 
