@@ -1,0 +1,952 @@
+<html lang="en" class="scroll-smooth"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OPIUM Client</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="A premium, stripped-back private client experience.">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
+    <style>
+        :root {
+            --transition: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 96px;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Outfit", sans-serif;
+            background-color: #000;
+            overflow-x: hidden;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 64px 64px;
+            background-position: center top;
+            mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 20%, transparent 100%);
+            -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 30%, black 20%, transparent 100%);
+            animation: gridDrift 30s linear infinite;
+        }
+
+        .ambient-orb {
+            position: fixed;
+            top: -20vh;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80vw;
+            height: 60vh;
+            background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06), transparent 70%);
+            filter: blur(80px);
+            z-index: -1;
+            pointer-events: none;
+            animation: pulseOrb 12s ease-in-out infinite alternate;
+        }
+
+        .ambient-orb-2 {
+            position: fixed;
+            bottom: -30vh;
+            right: -10vw;
+            width: 60vw;
+            height: 60vh;
+            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 60%);
+            filter: blur(100px);
+            z-index: -1;
+            pointer-events: none;
+            animation: floatOrb 15s ease-in-out infinite alternate;
+        }
+
+        .font-mono-custom { font-family: "IBM Plex Mono", monospace; }
+        .font-display { font-family: "Syne", sans-serif; }
+
+        .site-header {
+            transition: background var(--transition), border-color var(--transition), backdrop-filter var(--transition);
+        }
+        .site-header.is-scrolled {
+            background: rgba(0, 0, 0, 0.85);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        .glass-panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .custom-input {
+            transition: border-color var(--transition), background var(--transition), box-shadow var(--transition);
+        }
+        .custom-input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+            filter: blur(8px);
+            transition: opacity 800ms cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 800ms cubic-bezier(0.16, 1, 0.3, 1), 
+                        filter 800ms cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform, filter;
+        }
+        .reveal.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+        
+        .delay-100 { transition-delay: 100ms; }
+        .delay-200 { transition-delay: 200ms; }
+        .delay-300 { transition-delay: 300ms; }
+
+        @keyframes gridDrift {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(64px); }
+        }
+
+        @keyframes pulseOrb {
+            0% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            100% { transform: translateX(-50%) scale(1.1); opacity: 1; }
+        }
+
+        @keyframes floatOrb {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-50px, -30px); }
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .animate-hero {
+            animation: heroFloat 8s ease-in-out infinite;
+        }
+
+        .hover-glow-border { position: relative; }
+        .hover-glow-border::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: inherit;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent);
+            opacity: 0;
+            transition: opacity var(--transition);
+            z-index: -1;
+        }
+        .hover-glow-border:hover::before { opacity: 1; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+        /* ===== Vinyl ===== */
+        .vinyl-container {
+            position: fixed;
+            bottom: 28px;
+            right: 28px;
+            z-index: 100;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .vinyl-disk {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            background: 
+                radial-gradient(circle at center, #111 0%, #111 18%, transparent 18.5%),
+                radial-gradient(circle at center, transparent 18%, rgba(255,255,255,0.04) 18.5%, rgba(255,255,255,0.04) 19%, transparent 19.5%),
+                radial-gradient(circle at center, transparent 22%, rgba(255,255,255,0.03) 22.5%, rgba(255,255,255,0.03) 23%, transparent 23.5%),
+                radial-gradient(circle at center, transparent 27%, rgba(255,255,255,0.04) 27.5%, rgba(255,255,255,0.04) 28%, transparent 28.5%),
+                radial-gradient(circle at center, transparent 32%, rgba(255,255,255,0.03) 32.5%, rgba(255,255,255,0.03) 33%, transparent 33.5%),
+                radial-gradient(circle at center, transparent 37%, rgba(255,255,255,0.04) 37.5%, rgba(255,255,255,0.04) 38%, transparent 38.5%),
+                radial-gradient(circle at center, transparent 42%, rgba(255,255,255,0.03) 42.5%, rgba(255,255,255,0.03) 43%, transparent 43.5%),
+                radial-gradient(circle at center, transparent 47%, rgba(255,255,255,0.04) 47.5%, rgba(255,255,255,0.04) 48%, transparent 48.5%),
+                radial-gradient(circle at center, transparent 52%, rgba(255,255,255,0.03) 52.5%, rgba(255,255,255,0.03) 53%, transparent 53.5%),
+                radial-gradient(circle at center, transparent 57%, rgba(255,255,255,0.04) 57.5%, rgba(255,255,255,0.04) 58%, transparent 58.5%),
+                radial-gradient(circle at center, transparent 62%, rgba(255,255,255,0.03) 62.5%, rgba(255,255,255,0.03) 63%, transparent 63.5%),
+                radial-gradient(circle at center, transparent 67%, rgba(255,255,255,0.04) 67.5%, rgba(255,255,255,0.04) 68%, transparent 68.5%),
+                radial-gradient(circle at center, transparent 73%, rgba(255,255,255,0.03) 73.5%, rgba(255,255,255,0.03) 74%, transparent 74.5%),
+                radial-gradient(circle at center, transparent 80%, rgba(255,255,255,0.04) 80.5%, rgba(255,255,255,0.04) 81%, transparent 81.5%),
+                radial-gradient(circle at center, transparent 87%, rgba(255,255,255,0.03) 87.5%, rgba(255,255,255,0.03) 88%, transparent 88.5%),
+                radial-gradient(circle at center, transparent 93%, rgba(255,255,255,0.04) 93.5%, rgba(255,255,255,0.04) 94%, transparent 94.5%),
+                radial-gradient(circle, #0a0a0a 0%, #1a1a1a 100%);
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.08),
+                0 8px 32px rgba(0,0,0,0.8),
+                0 0 60px rgba(0,0,0,0.5);
+            animation: vinylSpin 3s linear infinite;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .vinyl-disk.paused {
+            animation-play-state: paused;
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.05),
+                0 4px 20px rgba(0,0,0,0.6),
+                0 0 40px rgba(0,0,0,0.4);
+        }
+
+        .vinyl-disk::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, #2a2a2a, #0d0d0d);
+            border: 1px solid rgba(255,255,255,0.06);
+            z-index: 2;
+        }
+
+        .vinyl-disk::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px; height: 4px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            z-index: 3;
+        }
+
+        .vinyl-label {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+            z-index: 2;
+        }
+
+        .vinyl-glow {
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .vinyl-container:hover .vinyl-disk {
+            box-shadow: 
+                0 0 0 1px rgba(255,255,255,0.12),
+                0 8px 40px rgba(0,0,0,0.9),
+                0 0 80px rgba(255,255,255,0.03);
+        }
+
+        .vinyl-pause-indicator {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+        }
+
+        .vinyl-pause-indicator .bar {
+            width: 2.5px;
+            height: 10px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 1px;
+        }
+
+        .vinyl-disk.paused ~ .vinyl-pause-indicator {
+            opacity: 1;
+        }
+
+        @keyframes vinylSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Volume Panel */
+        .volume-panel {
+            position: absolute;
+            bottom: calc(100% + 14px);
+            right: 0;
+            width: 200px;
+            padding: 16px;
+            background: rgba(12, 12, 12, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px) scale(0.95);
+            transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+            pointer-events: none;
+            z-index: 101;
+        }
+
+        .volume-panel::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 28px;
+            border: 5px solid transparent;
+            border-top-color: rgba(255,255,255,0.1);
+        }
+
+        .volume-panel.open {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .volume-slider-track {
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .volume-slider-fill {
+            height: 100%;
+            background: white;
+            border-radius: 4px;
+            width: 70%;
+            position: relative;
+            transition: width 0.05s linear;
+        }
+
+        .volume-slider-fill::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 8px rgba(255,255,255,0.3);
+        }
+
+        .volume-slider-track:hover .volume-slider-fill::after {
+            transform: translateY(-50%) scale(1.2);
+            box-shadow: 0 0 14px rgba(255,255,255,0.5);
+        }
+
+        input[type="range"].volume-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+        }
+
+        input[type="range"].volume-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        input[type="range"].volume-range::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 16px rgba(255,255,255,0.5);
+        }
+
+        input[type="range"].volume-range::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        input[type="range"].volume-range::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 4px;
+        }
+
+        input[type="range"].volume-range::-moz-range-track {
+            height: 4px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        input[type="range"].volume-range::-moz-range-progress {
+            height: 4px;
+            border-radius: 4px;
+            background: white;
+        }
+
+        @media (max-width: 640px) {
+            .vinyl-container { bottom: 20px; right: 20px; }
+            .vinyl-disk { width: 60px; height: 60px; }
+            .vinyl-disk::before { width: 18px; height: 18px; }
+            .vinyl-label { width: 14px; height: 14px; }
+            .volume-panel { width: 180px; right: -8px; }
+        }
+    </style>
+</head>
+<body class="text-neutral-300 antialiased selection:bg-white/20 selection:text-white">
+    
+    <audio id="bgMusic" loop preload="auto">
+        <source src="LONOWN-feat-riserayss-worry-ultra-slowed-(LoadedTracks.com).mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="ambient-orb" aria-hidden="true"></div>
+    <div class="ambient-orb-2" aria-hidden="true"></div>
+
+    <!-- Vinyl + Volume Panel -->
+    <div class="vinyl-container" id="vinylContainer">
+        <div class="volume-panel" id="volumePanel">
+            <div class="flex items-center justify-between mb-3">
+                <span class="font-mono-custom text-[10px] uppercase tracking-widest text-neutral-500">Volume</span>
+                <span class="font-mono-custom text-[10px] text-neutral-400" id="volumePercent">70%</span>
+            </div>
+            <input type="range" min="0" max="100" value="70" class="volume-range" id="volumeSlider">
+            <div class="flex items-center justify-between mt-3 gap-2">
+                <button class="flex-1 h-8 rounded-lg border border-white/10 bg-white/[0.02] text-neutral-400 text-xs font-mono-custom uppercase tracking-widest hover:bg-white/[0.06] hover:text-white transition-all duration-200" id="muteBtn">Mute</button>
+                <button class="flex-1 h-8 rounded-lg bg-white text-black text-xs font-mono-custom uppercase tracking-widest hover:bg-neutral-200 transition-all duration-200" id="playPauseBtn">Pause</button>
+            </div>
+        </div>
+
+        <div class="vinyl-glow"></div>
+        <div class="vinyl-disk" id="vinylDisk" role="button" aria-label="Toggle music controls" tabindex="0">
+            <div class="vinyl-label"></div>
+        </div>
+        <div class="vinyl-pause-indicator">
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+    </div>
+
+    <div class="relative isolation-isolate">
+        
+        <header class="site-header fixed top-0 w-full z-50 border-b border-transparent" id="top">
+            <div class="max-w-[1160px] mx-auto px-6 h-20 flex items-center justify-between">
+                <a class="flex items-center gap-3 group" href="#top" aria-label="OPIUM Client home">
+                    <span class="font-display font-medium tracking-tighter text-lg text-white transition-opacity group-hover:opacity-80">OPIUM</span>
+                    <span class="px-2.5 py-1 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono-custom text-neutral-400 tracking-widest uppercase">v2.4 Core</span>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-8" aria-label="Primary">
+                    <a href="#features" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Features</a>
+                    <a href="#pricing" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Access</a>
+                    <a href="#download" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Download</a>
+                    <a href="#community" class="font-mono-custom text-xs uppercase tracking-widest text-neutral-400 hover:text-white transition-colors">Socials</a>
+                    
+                    <a class="inline-flex items-center justify-center h-9 px-4 ml-2 rounded-xl border border-white/10 bg-white/[0.03] text-sm text-white hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300" href="#download">
+                        Download <iconify-icon icon="solar:arrow-right-linear" stroke-width="1.5" class="ml-2 text-sm"></iconify-icon>
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <section class="relative pt-40 pb-20 md:pt-48 md:pb-32 px-6">
+                <div class="max-w-[1160px] mx-auto text-center">
+                    
+                    <div class="reveal max-w-3xl mx-auto flex flex-col items-center">
+                        <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/[0.02] text-xs font-mono-custom tracking-widest uppercase text-neutral-400 mb-8">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.8)]"></span>
+                            Minecraft 1.21.4 Supported
+                        </span>
+                        
+                        <h1 class="text-5xl md:text-7xl lg:text-8xl tracking-tighter font-semibold text-transparent bg-clip-text bg-gradient-to-b from-white to-neutral-500 leading-[1.05] mb-6">
+                            Absolute silence.<br>Total control.
+                        </h1>
+                        
+                        <p class="text-base md:text-lg text-neutral-400 font-light max-w-xl mx-auto leading-relaxed mb-10">
+                            A stripped-back, premium private client experience with pristine typography, tighter flows, and a deeply refined visual language.
+                        </p>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto">
+                            <a class="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.15)] w-full sm:w-auto" href="#download">
+                                Download Now
+                                <iconify-icon icon="solar:download-minimalistic-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
+                            </a>
+                            <a class="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl border border-white/10 bg-white/[0.02] text-white font-medium text-sm transition-all duration-300 hover:bg-white/[0.06] hover:border-white/20 hover:scale-[1.02] w-full sm:w-auto" href="#features">
+                                View Features
+                                <iconify-icon icon="solar:arrow-right-linear" stroke-width="1.5" class="text-lg text-neutral-400"></iconify-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    <article class="reveal delay-200 mt-24 animate-hero mx-auto max-w-4xl rounded-2xl glass-panel shadow-[0_30px_80px_rgba(0,0,0,0.8)] border border-white/10 overflow-hidden relative group">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-br from-white/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+
+                        <div class="flex items-center px-5 h-14 border-b border-white/5 bg-black/40">
+                            <div class="flex gap-2">
+                                <span class="w-2.5 h-2.5 rounded-full bg-neutral-700"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-neutral-800"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-neutral-800"></span>
+                            </div>
+                            <div class="ml-auto flex items-center gap-4 text-neutral-500">
+                                <iconify-icon icon="solar:shield-check-linear" stroke-width="1.5" class="text-sm"></iconify-icon>
+                                <iconify-icon icon="solar:wifi-router-minimalistic-linear" stroke-width="1.5" class="text-sm"></iconify-icon>
+                            </div>
+                        </div>
+
+                        <div class="p-8 md:p-12 relative text-left">
+                            <div class="p-6 rounded-xl bg-black/50 border border-white/5 font-mono-custom text-xs md:text-sm text-neutral-400 shadow-inner group-hover:border-white/10 transition-colors duration-500">
+                                <div class="flex items-center gap-3 mb-5">
+                                    <span class="text-white">Core initialized on local runtime</span>
+                                </div>
+                                <div class="flex flex-col gap-3 border-l border-white/10 pl-5 ml-1">
+                                    <div class="flex items-center justify-between max-w-md"><span class="text-neutral-500">&gt; Injecting ghost architecture...</span> <span class="text-white/30">[OK]</span></div>
+                                    <div class="flex items-center justify-between max-w-md"><span class="text-neutral-500">&gt; Bypassing standard OS polling...</span> <span class="text-white/30">[OK]</span></div>
+                                    <div class="flex items-center justify-between max-w-md"><span class="text-neutral-500">&gt; Hooking peripheral drivers...</span> <span class="text-white/30">[OK]</span></div>
+                                    <div class="text-white mt-2 font-medium">&gt; OPIUM v2.4 Active. System silent.</div>
+                                </div>
+                            </div>
+
+                            <div class="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div class="p-5 rounded-xl border border-white/5 bg-white/[0.01] text-center hover:bg-white/[0.03] transition-colors duration-300">
+                                    <span class="block text-2xl md:text-3xl font-semibold tracking-tighter text-white mb-1">90+</span>
+                                    <span class="block text-xs font-mono-custom uppercase tracking-widest text-neutral-500">Modules</span>
+                                </div>
+                                <div class="p-5 rounded-xl border border-white/5 bg-white/[0.01] text-center hover:bg-white/[0.03] transition-colors duration-300">
+                                    <span class="block text-2xl md:text-3xl font-semibold tracking-tighter text-white mb-1">0ms</span>
+                                    <span class="block text-xs font-mono-custom uppercase tracking-widest text-neutral-500">Input Delay</span>
+                                </div>
+                                <div class="p-5 rounded-xl border border-white/5 bg-white/[0.01] text-center hover:bg-white/[0.03] transition-colors duration-300">
+                                    <span class="block text-2xl md:text-3xl font-semibold tracking-tighter text-white mb-1">1:1</span>
+                                    <span class="block text-xs font-mono-custom uppercase tracking-widest text-neutral-500">Sync Ratio</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="py-24 md:py-32 px-6" id="features">
+                <div class="max-w-[1160px] mx-auto">
+                    <div class="reveal max-w-2xl mx-auto text-center mb-20">
+                        <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Core Architecture</span>
+                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">A dev's passion project.</h2>
+                        <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
+                            Engineered with a strict monochrome palette. Smoother depth, perfect spacing, and seamless motion.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <article class="reveal hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:target-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Combat Suite</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">Cleaner fights.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">Crystal PvP modules, disciplined hierarchy, and less visual clutter around the actions that matter most mid-fight.</p>
+                        </article>
+                        
+                        <article class="reveal delay-100 hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:routing-2-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Movement</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">Stay deliberate.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">Speed, velocity, flight, and traversal settings are framed with enough white space to feel premium.</p>
+                        </article>
+                        
+                        <article class="reveal delay-200 hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:shield-keyhole-minimalistic-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Protection</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">Locked in.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">Everything from account flow to access states is presented with steadier visual confidence and a polished shell.</p>
+                        </article>
+                        
+                        <article class="reveal hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:widget-3-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Real-Time HUD</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">Useful data.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">HUD elements are represented with minimal chrome and a stronger emphasis on contrast and scan speed.</p>
+                        </article>
+                        
+                        <article class="reveal delay-100 hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:programming-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Development</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">Active updates.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">The section spacing and card flow sell an actively maintained product rather than a page stuffed edge to edge.</p>
+                        </article>
+                        
+                        <article class="reveal delay-200 hover-glow-border group glass-panel rounded-3xl p-8 transition-transform duration-500 hover:-translate-y-1">
+                            <iconify-icon icon="solar:layers-minimalistic-linear" stroke-width="1.5" class="text-3xl text-neutral-400 mb-8 group-hover:text-white transition-colors duration-300"></iconify-icon>
+                            <span class="block font-mono-custom text-xs uppercase tracking-widest text-neutral-500 mb-4">Full Stack</span>
+                            <h3 class="font-display text-xl tracking-tight font-medium text-white mb-3">One system.</h3>
+                            <p class="text-sm text-neutral-400 leading-relaxed font-light">Modules, plans, activation, and community all land inside one consistent black-and-white language.</p>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-24 md:py-32 px-6" id="pricing">
+                <div class="max-w-[1160px] mx-auto">
+                    <div class="reveal max-w-2xl mx-auto text-center mb-20">
+                        <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Get Started</span>
+                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">Free lifetime access.</h2>
+                        <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
+                            Full access, forever. No strings attached.
+                        </p>
+                    </div>
+
+                    <div class="reveal max-w-lg mx-auto">
+                        <article class="relative rounded-3xl p-10 md:p-12 flex flex-col border border-white/20 bg-neutral-950/80 shadow-[0_0_50px_-15px_rgba(255,255,255,0.1)] backdrop-blur-xl overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-b from-white/[0.06] to-transparent pointer-events-none"></div>
+                            
+                            <div class="absolute top-0 right-0 p-8 opacity-20 pointer-events-none">
+                                <iconify-icon icon="solar:star-fall-linear" stroke-width="1.5" class="text-6xl text-white"></iconify-icon>
+                            </div>
+                            
+                            <span class="relative z-10 font-mono-custom text-xs uppercase tracking-widest text-white mb-6">Lifetime</span>
+                            <h3 class="relative z-10 font-display text-2xl tracking-tight font-medium text-white mb-2">Permanent access.</h3>
+                            <div class="relative z-10 text-5xl font-display font-medium text-white mb-1">Free</div>
+                            <div class="relative z-10 font-mono-custom text-sm text-neutral-400 pb-8 border-b border-white/10 mb-8">No payment needed — ever</div>
+                            
+                            <ul class="relative z-10 flex flex-col gap-5 mb-10 flex-grow">
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Permanent client access
+                                </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    All future updates included
+                                </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Instant download delivery
+                                </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Beta features included
+                                </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Private beta role included
+                                </li>
+                                <li class="flex items-start gap-4 text-sm font-light text-neutral-300">
+                                    <iconify-icon icon="solar:check-circle-linear" stroke-width="1.5" class="text-white text-lg shrink-0 mt-0.5"></iconify-icon>
+                                    Priority support access
+                                </li>
+                            </ul>
+                            
+                            <a class="relative z-10 inline-flex items-center justify-center w-full h-14 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] mt-auto" href="#download">
+                                Download Free
+                                <iconify-icon icon="solar:download-minimalistic-linear" stroke-width="1.5" class="text-lg ml-2"></iconify-icon>
+                            </a>
+                        </article>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Download Section -->
+            <section class="py-24 md:py-32 px-6" id="download">
+                <div class="max-w-[1160px] mx-auto">
+                    <div class="reveal max-w-2xl mx-auto text-center mb-20">
+                        <span class="font-mono-custom text-xs uppercase tracking-widest text-neutral-500">Download</span>
+                        <h2 class="font-display text-4xl md:text-5xl tracking-tighter font-semibold mt-4 mb-6 text-white">Grab the build.</h2>
+                        <p class="text-base md:text-lg text-neutral-400 font-light leading-relaxed">
+                            One file. No installers, no bloat. Just drop it in and go.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+                        <article class="reveal glass-panel rounded-3xl p-8 md:p-12 border border-white/10">
+                            <div class="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mb-8">
+                                <iconify-icon icon="solar:download-minimalistic-linear" stroke-width="1.5" class="text-3xl text-white"></iconify-icon>
+                            </div>
+                            <h3 class="font-display text-2xl tracking-tight font-medium text-white mb-3">Latest release.</h3>
+                            <p class="text-sm text-neutral-400 font-light mb-8">OPIUM v2.4 Core — stable build for Minecraft 1.21.4</p>
+                            
+                            <div class="flex flex-col gap-4">
+                                <a href="#" class="inline-flex items-center justify-center gap-3 w-full h-14 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.01] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]" onclick="event.preventDefault(); alert('Download started — OPIUM v2.4 Core')">
+                                    <iconify-icon icon="solar:download-minimalistic-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
+                                    Download OPIUM v2.4
+                                </a>
+                                
+                                <div class="flex items-center justify-between px-1">
+                                    <span class="font-mono-custom text-[11px] uppercase tracking-widest text-neutral-500">Size: 12.4 MB</span>
+                                    <span class="font-mono-custom text-[11px] uppercase tracking-widest text-neutral-500">.jar</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
+                                <div class="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                                    <iconify-icon icon="solar:shield-check-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0"></iconify-icon>
+                                    VirusTotal clean — 0/72 detections
+                                </div>
+                                <div class="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                                    <iconify-icon icon="solar:verified-check-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0"></iconify-icon>
+                                    SHA-256 verified on build
+                                </div>
+                                <div class="flex items-center gap-3 text-sm text-neutral-400 font-light">
+                                    <iconify-icon icon="solar:refresh-linear" stroke-width="1.5" class="text-neutral-500 text-lg shrink-0"></iconify-icon>
+                                    Auto-update built in
+                                </div>
+                            </div>
+                        </article>
+
+                        <aside class="reveal delay-100 flex flex-col justify-center">
+                            <h3 class="font-display text-2xl tracking-tight font-medium text-white mb-4">How to install.</h3>
+                            <p class="text-base text-neutral-400 font-light leading-relaxed mb-10">Three steps. No nonsense. Drop the file and you're live.</p>
+                            
+                            <div class="flex flex-col gap-6">
+                                <div class="flex gap-5 items-start group">
+                                    <span class="font-mono-custom text-xs text-neutral-600 w-6 shrink-0 mt-0.5">01</span>
+                                    <div>
+                                        <strong class="block text-white font-medium mb-1 text-base">Download the .jar</strong>
+                                        <p class="text-sm font-light text-neutral-400 leading-relaxed">Click the download button. The file saves directly to your machine.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-5 items-start group">
+                                    <span class="font-mono-custom text-xs text-neutral-600 w-6 shrink-0 mt-0.5">02</span>
+                                    <div>
+                                        <strong class="block text-white font-medium mb-1 text-base">Drop into your folder</strong>
+                                        <p class="text-sm font-light text-neutral-400 leading-relaxed">Place the .jar inside your .minecraft/mods or clients directory.</p>
+                                    </div>
+                                </div>
+                                <div class="flex gap-5 items-start group">
+                                    <span class="font-mono-custom text-xs text-neutral-600 w-6 shrink-0 mt-0.5">03</span>
+                                    <div>
+                                        <strong class="block text-white font-medium mb-1 text-base">Launch and go</strong>
+                                        <p class="text-sm font-light text-neutral-400 leading-relaxed">Start Minecraft with the correct profile. OPIUM loads silently in the background.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+
+            <section class="py-24 md:py-32 px-6" id="community">
+                <div class="max-w-[1160px] mx-auto">
+                    <article class="reveal glass-panel rounded-3xl p-12 md:p-20 text-center relative overflow-hidden border border-white/10">
+                        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05),transparent_70%)] pointer-events-none"></div>
+                        
+                        <span class="relative z-10 font-mono-custom text-xs uppercase tracking-widest text-neutral-500 block mb-6">Join Our Community</span>
+                        <h3 class="relative z-10 font-display text-3xl md:text-5xl tracking-tighter font-semibold text-white mb-6">Stay connected without breaking the aesthetic.</h3>
+                        <p class="relative z-10 text-base md:text-lg text-neutral-400 font-light max-w-2xl mx-auto leading-relaxed mb-10">Support, announcements, and rollout updates sit inside one final monochrome call-to-action that closes the page with the exact same polish it opened with.</p>
+                        
+                        <div class="relative z-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                            <a class="inline-flex items-center justify-center gap-2 h-12 px-7 rounded-xl bg-white text-black font-medium text-sm transition-all duration-300 hover:bg-neutral-200 hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] w-full sm:w-auto" href="#top">
+                                Join Discord <iconify-icon icon="solar:users-group-rounded-linear" stroke-width="1.5" class="text-lg"></iconify-icon>
+                            </a>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer class="border-t border-white/5 pt-12 pb-16 px-6">
+            <div class="max-w-[1160px] mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4 text-sm text-neutral-500 font-light">
+                    <span class="font-display font-medium tracking-tighter text-base text-white">OPIUM</span>
+                    <span class="w-1 h-1 rounded-full bg-white/20"></span>
+                    <span>Client Architecture</span>
+                </div>
+                <div class="text-xs text-neutral-600 font-mono-custom uppercase tracking-widest">© 2026 Opium Client. All rights reserved.</div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('.site-header');
+            const reveals = document.querySelectorAll('.reveal');
+
+            const handleScroll = () => {
+                if (window.scrollY > 20) {
+                    header.classList.add('is-scrolled');
+                } else {
+                    header.classList.remove('is-scrolled');
+                }
+            };
+
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            handleScroll();
+
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+
+                reveals.forEach(reveal => observer.observe(reveal));
+            } else {
+                reveals.forEach(reveal => reveal.classList.add('is-visible'));
+            }
+
+            // ===== Music System =====
+            const audio = document.getElementById('bgMusic');
+            const vinylDisk = document.getElementById('vinylDisk');
+            const vinylContainer = document.getElementById('vinylContainer');
+            const volumePanel = document.getElementById('volumePanel');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const volumePercent = document.getElementById('volumePercent');
+            const muteBtn = document.getElementById('muteBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            let isPlaying = false;
+            let isPanelOpen = false;
+            let previousVolume = 70;
+
+            audio.volume = 0.7;
+
+            function updateSliderBackground() {
+                const val = volumeSlider.value;
+                volumeSlider.style.background = `linear-gradient(to right, white 0%, white ${val}%, rgba(255,255,255,0.08) ${val}%, rgba(255,255,255,0.08) 100%)`;
+            }
+            updateSliderBackground();
+
+            function togglePlay() {
+                if (isPlaying) {
+                    audio.pause();
+                    vinylDisk.classList.add('paused');
+                    playPauseBtn.textContent = 'Play';
+                    isPlaying = false;
+                } else {
+                    audio.play().then(() => {
+                        vinylDisk.classList.remove('paused');
+                        playPauseBtn.textContent = 'Pause';
+                        isPlaying = true;
+                    }).catch(() => {});
+                }
+            }
+
+            function togglePanel(e) {
+                if (e) e.stopPropagation();
+                isPanelOpen = !isPanelOpen;
+                if (isPanelOpen) {
+                    volumePanel.classList.add('open');
+                } else {
+                    volumePanel.classList.remove('open');
+                }
+            }
+
+            vinylDisk.addEventListener('click', (e) => {
+                togglePanel(e);
+            });
+
+            vinylDisk.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    togglePanel();
+                }
+            });
+
+            // Close panel when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isPanelOpen && !vinylContainer.contains(e.target)) {
+                    isPanelOpen = false;
+                    volumePanel.classList.remove('open');
+                }
+            });
+
+            // Prevent panel clicks from closing it
+            volumePanel.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+
+            // Volume slider
+            volumeSlider.addEventListener('input', () => {
+                const val = volumeSlider.value;
+                audio.volume = val / 100;
+                volumePercent.textContent = val + '%';
+                updateSliderBackground();
+
+                if (val == 0) {
+                    muteBtn.textContent = 'Unmute';
+                } else {
+                    muteBtn.textContent = 'Mute';
+                    previousVolume = val;
+                }
+            });
+
+            // Mute button
+            muteBtn.addEventListener('click', () => {
+                if (audio.volume > 0) {
+                    previousVolume = volumeSlider.value;
+                    audio.volume = 0;
+                    volumeSlider.value = 0;
+                    volumePercent.textContent = '0%';
+                    muteBtn.textContent = 'Unmute';
+                    updateSliderBackground();
+                } else {
+                    const restore = previousVolume || 70;
+                    audio.volume = restore / 100;
+                    volumeSlider.value = restore;
+                    volumePercent.textContent = restore + '%';
+                    muteBtn.textContent = 'Mute';
+                    updateSliderBackground();
+                }
+            });
+
+            // Play/Pause button in panel
+            playPauseBtn.addEventListener('click', () => {
+                togglePlay();
+            });
+
+            // Auto-play on first interaction
+            let firstInteraction = true;
+            const startOnInteraction = () => {
+                if (firstInteraction) {
+                    firstInteraction = false;
+                    audio.play().then(() => {
+                        vinylDisk.classList.remove('paused');
+                        playPauseBtn.textContent = 'Pause';
+                        isPlaying = true;
+                    }).catch(() => {});
+                }
+                document.removeEventListener('click', startOnInteraction);
+                document.removeEventListener('keydown', startOnInteraction);
+            };
+            document.addEventListener('click', startOnInteraction);
+            document.addEventListener('keydown', startOnInteraction);
+        });
+    </script>
+
+</body></html>
